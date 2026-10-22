@@ -1,0 +1,181 @@
+
+{% extends "base.html" %}
+
+{% block title %}Visit History | MediScope{% endblock %}
+{% block page_heading %}Patient Visit History{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <span class="eyebrow">RECORD MANAGEMENT</span>
+    <h1>Patient visit <span>history.</span></h1>
+    <p>Search, filter, review, and manage recorded hospital visits.</p>
+</div>
+
+<div class="panel">
+    <div class="panel-heading">
+        <div>
+            <h3>Search and Filter</h3>
+            <p>Find records using the fields below.</p>
+        </div>
+    </div>
+
+    <form action="{{ url_for('history') }}" method="GET">
+        <div class="form-grid">
+            <div class="field">
+                <label for="q">Search records</label>
+                <input
+                    type="search"
+                    id="q"
+                    name="q"
+                    value="{{ filters.q }}"
+                    placeholder="Name, patient ID, visit ID, age..."
+                >
+            </div>
+
+            <div class="field">
+                <label for="department_id">Department</label>
+                <select id="department_id" name="department_id">
+                    <option value="">All departments</option>
+                    {% for department in departments %}
+                    <option
+                        value="{{ department.department_id }}"
+                        {% if filters.department_id|string == department.department_id|string %}selected{% endif %}
+                    >
+                        {{ department.department_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="visit_type">Visit Type</label>
+                <select id="visit_type" name="visit_type">
+                    <option value="">All visit types</option>
+                    {% for kind in visit_types %}
+                    <option
+                        value="{{ kind }}"
+                        {% if filters.visit_type == kind %}selected{% endif %}
+                    >
+                        {{ kind }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="start_date">From Date</label>
+                <input
+                    type="date"
+                    id="start_date"
+                    name="start_date"
+                    value="{{ filters.start_date }}"
+                >
+            </div>
+
+            <div class="field">
+                <label for="end_date">To Date</label>
+                <input
+                    type="date"
+                    id="end_date"
+                    name="end_date"
+                    value="{{ filters.end_date }}"
+                >
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a class="btn btn-secondary" href="{{ url_for('history') }}">
+                Clear Filters
+            </a>
+            <button type="submit" class="btn btn-primary">
+                Search Visits
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="panel">
+    <div class="panel-heading">
+        <div>
+            <h3>All Visits</h3>
+            <p>{{ records|length }} visit record(s) found.</p>
+        </div>
+        <a class="btn btn-primary" href="{{ url_for('index') }}">
+            + Add Visit
+        </a>
+    </div>
+
+    {% if records %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>S.No.</th>
+                    <th>Visit ID</th>
+                    <th>Patient ID</th>
+                    <th>Patient Name</th>
+                    <th>Visit Date</th>
+                    <th>Exact Age</th>
+                    <th>Gender</th>
+                    <th>Department</th>
+                    <th>Visit Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for visit in records %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ visit.visit_id }}</td>
+                    <td>P{{ '%04d'|format(visit.patient_id|int) }}</td>
+                    <td>{{ visit.patient_name or 'Not entered' }}</td>
+                    <td>{{ visit.visit_date.strftime('%Y-%m-%d') }}</td>
+
+                    <td>
+                        {% if visit.age is not none %}
+                            {{ visit.age }} years
+                        {% else %}
+                            Not entered
+                        {% endif %}
+                    </td>
+
+                    <td>{{ visit.gender or 'Not specified' }}</td>
+                    <td>{{ visit.department_name }}</td>
+                    <td>{{ visit.visit_type }}</td>
+
+                    <td>
+                        <div class="form-actions">
+                            <a
+                                class="btn btn-secondary"
+                                href="{{ url_for('edit', visit_id=visit.visit_id) }}"
+                            >
+                                Edit
+                            </a>
+
+                            <form
+                                action="{{ url_for('delete', visit_id=visit.visit_id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Are you sure you want to delete this visit?');"
+                            >
+                                <button type="submit" class="btn btn-secondary">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>No visits match your search. Try changing the filters or add a new visit.</p>
+    {% endif %}
+</div>
+
+<p class="notice">
+    Use synthetic or de-identified data for project demonstrations.
+    This is an educational project.
+</p>
+{% endblock %}

@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}MediScope | Hospital Analytics{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <aside class="sidebar">
+        <a class="brand" href="{{ url_for('index') }}">
+            <span class="brand-icon">✚</span>
+            <span>
+                <strong>MediScope</strong>
+                <small>HOSPITAL ANALYTICS</small>
+            </span>
+        </a>
+
+        <p class="nav-heading">WORKSPACE</p>
+
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}"
+               {% if request.endpoint == 'index' %}aria-current="page"{% endif %}>
+                <span>＋</span> Add Visit
+            </a>
+
+            <a href="{{ url_for('dashboard') }}"
+               {% if request.endpoint == 'dashboard' %}aria-current="page"{% endif %}>
+                <span>▦</span> Dashboard
+            </a>
+
+            <a href="{{ url_for('history') }}"
+               {% if request.endpoint in ['history', 'edit', 'delete'] %}aria-current="page"{% endif %}>
+                <span>☷</span> Visit Records
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <span class="status-dot"></span>
+            Database application
+            <small>Hospital Analytics</small>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <span class="topbar-label">HOSPITAL MANAGEMENT</span>
+                <h2>{% block page_heading %}Overview{% endblock %}</h2>
+            </div>
+
+            <span class="today">
+                {{ today if today is defined else "" }}
+            </span>
+        </header>
+
+        <section class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages" role="status" aria-live="polite">
+                        {% for category, message in messages %}
+                            <div class="alert {{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </section>
+
+        <footer class="footer">
+            MediScope · Hospital Patient Data Analysis System
+            <span>Educational project</span>
+        </footer>
+    </main>
+</body>
+</html>

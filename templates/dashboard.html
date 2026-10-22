@@ -1,0 +1,155 @@
+
+
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard | MediScope{% endblock %}
+{% block page_heading %}Hospital Analytics Dashboard{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <span class="eyebrow">HOSPITAL INSIGHTS</span>
+    <h1>Understand every <span>visit.</span></h1>
+    <p>Explore hospital activity, department performance, and patient age statistics.</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Total Visits</h3>
+        <p class="stat-number">{{ total_visits }}</p>
+        <p>All recorded visits</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Active Departments</h3>
+        <p class="stat-number">{{ active_departments }}</p>
+        <p>Departments with visits</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Average Daily Visits</h3>
+        <p class="stat-number">{{ average_daily_visits }}</p>
+        <p>Average across recorded visit dates</p>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="panel">
+        <h3>Visits by Department</h3>
+        <p>Compare activity across departments.</p>
+        <img
+            src="{{ url_for('static', filename='department_chart.png') }}"
+            alt="Bar chart showing visits by department"
+            class="chart-image"
+        >
+    </div>
+
+    <div class="panel">
+        <h3>Monthly Visits</h3>
+        <p>Review visit counts by month.</p>
+        <img
+            src="{{ url_for('static', filename='monthly_chart.png') }}"
+            alt="Bar chart showing monthly visits"
+            class="chart-image"
+        >
+    </div>
+
+    <div class="panel">
+        <h3>Visits by Exact Age</h3>
+        <p>Review visit counts for each recorded age.</p>
+        <img
+            src="{{ url_for('static', filename='age_chart.png') }}"
+            alt="Bar chart showing visits by exact patient age"
+            class="chart-image"
+        >
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-heading">
+        <div>
+            <h3>Visit Type Statistics</h3>
+            <p>Number of visits in each category.</p>
+        </div>
+    </div>
+
+    {% if visit_type_counts %}
+        {% for visit_type, count in visit_type_counts.items() %}
+        <div class="visit-type-row">
+            <span>{{ visit_type }}</span>
+            <strong>{{ count }}</strong>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No visit data available yet.</p>
+    {% endif %}
+</div>
+
+<div class="panel">
+    <div class="panel-heading">
+        <div>
+            <h3>Recent Visits</h3>
+            <p>Latest five recorded visits.</p>
+        </div>
+        <a class="btn btn-primary" href="{{ url_for('history') }}">
+            View All Visits →
+        </a>
+    </div>
+
+    {% if recent_visits %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Visit ID</th>
+                    <th>Patient ID</th>
+                    <th>Exact Age</th>
+                    <th>Department</th>
+                    <th>Visit Date</th>
+                    <th>Visit Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for visit in recent_visits %}
+                <tr>
+                    <td>{{ visit.visit_id }}</td>
+                    <td>{{ visit.patient_id }}</td>
+                    <td>
+                        {% if visit.age is not none %}
+                            {{ visit.age }} years
+                        {% else %}
+                            Not entered
+                        {% endif %}
+                    </td>
+                    <td>{{ visit.department_name }}</td>
+                    <td>{{ visit.visit_date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ visit.visit_type }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>No visits recorded yet. Add a visit to see dashboard analytics.</p>
+    {% endif %}
+</div>
+
+<div class="quick-grid">
+    <a class="quick-card" href="{{ url_for('index') }}">
+        <span class="quick-icon green">+</span>
+        <span>
+            <strong>Add Patient Visit</strong>
+            <small>Record a new hospital visit</small>
+        </span>
+        <span class="arrow">→</span>
+    </a>
+
+    <a class="quick-card" href="{{ url_for('history') }}">
+        <span class="quick-icon gold">☷</span>
+        <span>
+            <strong>Visit History</strong>
+            <small>Search and manage existing records</small>
+        </span>
+        <span class="arrow">→</span>
+    </a>
+</div>
+{% endblock %}

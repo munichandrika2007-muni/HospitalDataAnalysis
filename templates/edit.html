@@ -1,0 +1,142 @@
+
+{% extends "base.html" %}
+
+{% block title %}Edit Visit | MediScope{% endblock %}
+{% block page_heading %}Edit Patient Visit{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <span class="eyebrow">PATIENT MANAGEMENT</span>
+    <h1>Update visit <span>details.</span></h1>
+    <p>Make changes to the patient's information and visit record.</p>
+</div>
+
+<div class="panel form-panel">
+    <div class="panel-heading">
+        <div>
+            <h3>Edit Visit #{{ record.visit_id }}</h3>
+            <p>Update the required fields below.</p>
+        </div>
+        <span class="pill">Edit record</span>
+    </div>
+
+    <form action="{{ url_for('edit', visit_id=record.visit_id) }}"
+          method="POST">
+        <div class="form-grid">
+
+            <!-- Patient Name -->
+            <div class="field full-width">
+                <label for="patient_name">Patient Name *</label>
+                <input
+                    type="text"
+                    id="patient_name"
+                    name="patient_name"
+                    value="{{ record.patient_name }}"
+                    placeholder="Enter patient name"
+                    maxlength="150"
+                    required
+                >
+            </div>
+
+            <!-- Patient Age -->
+            <div class="field">
+                <label for="age">Patient Age *</label>
+                <input
+                    type="number"
+                    id="age"
+                    name="age"
+                    min="0"
+                    max="120"
+                    step="1"
+                    value="{{ record.age if record.age is not none else '' }}"
+                    placeholder="Enter exact age"
+                    required
+                >
+            </div>
+
+            <!-- Gender -->
+            <div class="field">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender">
+                    <option value="Not specified"
+                        {% if record.gender == 'Not specified' %}selected{% endif %}>
+                        Prefer not to specify
+                    </option>
+                    <option value="Female"
+                        {% if record.gender == 'Female' %}selected{% endif %}>
+                        Female
+                    </option>
+                    <option value="Male"
+                        {% if record.gender == 'Male' %}selected{% endif %}>
+                        Male
+                    </option>
+                    <option value="Other"
+                        {% if record.gender == 'Other' %}selected{% endif %}>
+                        Other
+                    </option>
+                </select>
+            </div>
+
+            <!-- Department -->
+            <div class="field">
+                <label for="department_id">Department *</label>
+                <select id="department_id" name="department_id" required>
+                    {% for department in departments %}
+                    <option
+                        value="{{ department.department_id }}"
+                        {% if department.department_id == record.department_id %}selected{% endif %}
+                    >
+                        {{ department.department_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Visit Date -->
+            <div class="field">
+                <label for="visit_date">Visit Date *</label>
+                <input
+                    type="date"
+                    id="visit_date"
+                    name="visit_date"
+                    value="{{ record.visit_date.isoformat() }}"
+                    max="{{ today }}"
+                    required
+                >
+            </div>
+
+            <!-- Visit Type -->
+            <div class="field full-width">
+                <label for="visit_type">Visit Type *</label>
+                <select id="visit_type" name="visit_type" required>
+                    {% for kind in visit_types %}
+                    <option
+                        value="{{ kind }}"
+                        {% if record.visit_type == kind %}selected{% endif %}
+                    >
+                        {{ kind }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <a class="btn btn-secondary"
+               href="{{ url_for('history') }}">
+                Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+                Update Visit →
+            </button>
+        </div>
+    </form>
+</div>
+
+<p class="notice">
+    Use synthetic or de-identified data for project demonstrations.
+</p>
+{% endblock %}
+
+

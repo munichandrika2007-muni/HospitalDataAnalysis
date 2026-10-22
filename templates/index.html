@@ -1,0 +1,138 @@
+
+
+{% extends "base.html" %}
+
+{% block title %}Add Visit | MediScope{% endblock %}
+{% block page_heading %}Add Patient Visit{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <span class="eyebrow">PATIENT MANAGEMENT</span>
+    <h1>Every visit tells a <span>story.</span></h1>
+    <p>Record patient visits and keep hospital information organised in one place.</p>
+</div>
+
+<div class="panel form-panel">
+    <div class="panel-heading">
+        <div>
+            <h3>New Visit Details</h3>
+            <p>Enter the patient and visit information below.</p>
+        </div>
+        <span class="pill">New record</span>
+    </div>
+
+    <form action="{{ url_for('add_visit_route') }}" method="POST">
+        <div class="form-grid">
+
+            <!-- Patient Name -->
+            <div class="field full-width">
+                <label for="patient_name">Patient Name *</label>
+                <input
+                    type="text"
+                    name="patient_name"
+                    id="patient_name"
+                    placeholder="Enter patient name"
+                    maxlength="150"
+                    required
+                >
+            </div>
+
+            <!-- Patient Age -->
+            <div class="field">
+                <label for="age">Patient Age *</label>
+                <input
+                    type="number"
+                    name="age"
+                    id="age"
+                    min="0"
+                    max="120"
+                    step="1"
+                    placeholder="Enter exact age (e.g. 23)"
+                    required
+                >
+                <small>Enter age in completed years, from 0 to 120.</small>
+            </div>
+
+            <!-- Gender -->
+            <div class="field">
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender">
+                    <option value="Not specified">Prefer not to specify</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <!-- Department -->
+            <div class="field">
+                <label for="department_id">Department *</label>
+                <select name="department_id" id="department_id" required>
+                    <option value="">Select department</option>
+                    {% for department in departments %}
+                    <option value="{{ department.department_id }}">
+                        {{ department.department_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Visit Date -->
+            <div class="field">
+                <label for="visit_date">Visit Date *</label>
+                <input
+                    type="date"
+                    name="visit_date"
+                    id="visit_date"
+                    value="{{ today }}"
+                    max="{{ today }}"
+                    required
+                >
+            </div>
+
+            <!-- Visit Type -->
+            <div class="field full-width">
+                <label for="visit_type">Visit Type *</label>
+                <select name="visit_type" id="visit_type" required>
+                    <option value="">Select visit type</option>
+                    {% for visit_type in visit_types %}
+                    <option value="{{ visit_type }}">
+                        {{ visit_type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button type="reset" class="btn btn-secondary">
+                Clear Form
+            </button>
+            <button type="submit" class="btn btn-primary">
+                Save Visit →
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="quick-grid">
+    <a class="quick-card" href="{{ url_for('dashboard') }}">
+        <span class="quick-icon green">▦</span>
+        <span>
+            <strong>Analytics Dashboard</strong>
+            <small>View charts and hospital statistics</small>
+        </span>
+        <span class="arrow">→</span>
+    </a>
+
+    <a class="quick-card" href="{{ url_for('history') }}">
+        <span class="quick-icon gold">☷</span>
+        <span>
+            <strong>Visit Records</strong>
+            <small>Search, edit and manage records</small>
+        </span>
+        <span class="arrow">→</span>
+    </a>
+</div>
+{% endblock %}
